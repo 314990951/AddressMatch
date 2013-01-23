@@ -128,6 +128,12 @@ namespace AddressMatch
                 //}
             } while (MatchStack.Count > 0);
 
+            if (resList == null || resList.Count == 0)
+            {
+                result.ResultState = MatchResultState.NOTFOUND;
+                return result;
+            }
+
             result.Result = resList.First();
             result.ResultState = MatchResultState.SUCCESS;
 
