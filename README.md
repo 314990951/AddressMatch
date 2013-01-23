@@ -13,3 +13,4 @@ can be classified into a same class).
 
 Demo
 ===========
+    For more detail, see Demo/Demo.cs
