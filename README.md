@@ -1,7 +1,7 @@
-AddressMatch
+﻿AddressMatch
 ============
 
-A component for Parse and Match Address(Chinese) in Graph structure, used in piker.wutnews.net. 
+A component for Parse and Match Address(in Chinese) in Graph structure, used in piker.wutnews.net. 
 
 Uncompleted  :)
 ============
