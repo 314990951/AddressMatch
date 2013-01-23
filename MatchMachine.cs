@@ -34,11 +34,11 @@ namespace AddressMatch
         {
             if (addrset == null)
             {
-                throw new Exception("AddrSet未初始化");
+                throw new Exception("AddrSet is not initialized");
             }
             if (AddrSet.AddrGraph == null)
             {
-                throw new Exception("Graph未初始化"); 
+                throw new Exception("Graph is not initialized"); 
             }
 
             _addrset = addrset;
@@ -53,7 +53,11 @@ namespace AddressMatch
         }
 
         
-
+        /// <summary>
+        /// Backward Match
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public MatchResult Match(String[] s)
         {
             Stack<State> MatchStack = new Stack<State>();
@@ -61,7 +65,7 @@ namespace AddressMatch
             MatchResult result = new MatchResult();
             
             s.Reverse();
-            //保存第一个匹配
+            //Store the first Match
             State firstState = new State();
 
             for (int i = 0; i < s.Count();i++)
@@ -130,7 +134,7 @@ namespace AddressMatch
             return result;
 
         }
-
+        // TODO   Uncompleted
         public MatchResult FuzzyMatch()
         {
 
@@ -152,7 +156,7 @@ namespace AddressMatch
             }
             else
             {
-                //--------------------TODO 待改进
+                //--------------------TODO   not effective
                 LEVEL min = correntState.NodeList.First().NodeLEVEL;
                 LEVEL max = correntState.NodeList.First().NodeLEVEL;
 

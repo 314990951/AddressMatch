@@ -13,7 +13,6 @@ namespace AddressMatch.Training
 
         private AddrSet _addrset;
 
-        //private TrainRule LocalTrainRule;
 
         // TODO  uncompleted
         private bool defualtRule(State state, InsertElement el)
@@ -86,7 +85,7 @@ namespace AddressMatch.Training
         /// <summary>
         /// Train the AddrSet, string must be wrapped in InsertElement
         /// </summary>
-        /// <param name="list">InsertElements的List</param>
+        /// <param name="list">InsertElements' List</param>
         /// <param name="withException">Indicate whether throw exception,
         ///     if param is false, function will return 0 if train failed, if param is true, 
         ///     function will throw TrainException with detail information </param>

@@ -46,12 +46,12 @@ namespace AddressMatch.Training
     
     public enum InsertMode
     {
-        //标志位的前8位
+        //first 8 bit
         ExactlyLevel            = 0x1,
         DegradeLevel         = 0x2,
         UpgradeLevel         = 0x4,
         AutoLevel               = 0x8,
-        //标志位的9 - 16位
+        //last 8 bit
         NewPlace            = 0x100,
         OldPlace             = 0x200,
         AutoPlace            = 0x400,
