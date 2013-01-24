@@ -56,10 +56,12 @@ namespace AddressMatch
         /// <summary>
         /// Backward Match
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
+        /// <param name="s">address string[]</param>
+        /// <returns>result</returns>
         public MatchResult Match(String[] s)
         {
+            MatchHelper.Assert(s.Count() == 0,
+                                     @" input string[]'s length is 0 ");
             Stack<State> MatchStack = new Stack<State>();
 
             MatchResult result = new MatchResult();
@@ -102,12 +104,12 @@ namespace AddressMatch
                 result.ResultState = MatchResultState.MULTIMATCHED;
                 return result;
             }
-            if (firstState.NodeCount == 1)
-            {
-                result.Result = firstState.NodeList.First();
-                result.ResultState = MatchResultState.SUCCESS;
-                return result;
-            }
+            //if (firstState.NodeCount == 1)
+            //{
+            //    result.Result = firstState.NodeList.First();
+            //    result.ResultState = MatchResultState.SUCCESS;
+            //    return result;
+            //}
 
             List<GraphNode> resList;
             State TopState = MatchStack.Pop();
@@ -134,18 +136,27 @@ namespace AddressMatch
                 return result;
             }
 
+            if (resList.Count > 1)
+            {
+                result.ResultState = MatchResultState.MULTIMATCHED;
+                return result;
+            }
+
             result.Result = resList.First();
             result.ResultState = MatchResultState.SUCCESS;
 
             return result;
 
         }
+        
+        
         // TODO   Uncompleted
         public MatchResult FuzzyMatch()
         {
 
             return new MatchResult();
         }
+
 
         private State FilterState(State correntState,State preState)
         {
@@ -183,6 +194,10 @@ namespace AddressMatch
 
         #region -----------------------GET or SET-------------------------
 
+        /// <summary>
+        /// custom Match Rule
+        /// </summary>
+        /// <param name="rule">User-defined rule</param>
         public void SetMatchRule(MatchRule rule)
         {
             LocalMatchRule = rule;

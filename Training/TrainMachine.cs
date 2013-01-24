@@ -68,11 +68,11 @@ namespace AddressMatch.Training
         {
             if (addrset == null)
             {
-                throw new Exception("AddrSet未初始化");
+                throw new Exception("AddrSet is not initialized");
             }
             if (AddrSet.AddrGraph == null)
             {
-                throw new Exception("Graph未初始化");
+                throw new Exception("Graph is not initialized");
             }
 
             _addrset = addrset;
@@ -318,7 +318,7 @@ namespace AddressMatch.Training
                     else
                     {
                         index = i;
-                        // contitnue loop
+                        // continue loop
                         continue;
                     }
                 }

@@ -24,11 +24,13 @@ namespace AddressMatch
 
         private static AddrSet _instance;
 
+        //lock for Single Instance
         private static object SingleInstanceLock = new object();
 
+        //rwlock
         private static ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
 
-        #region -----------------------初始化方法-------------------------
+        #region -----------------------Init -------------------------
 
         private AddrSet()
         {
@@ -36,18 +38,20 @@ namespace AddressMatch
 
             if (!ResumeFromDisk())
             {
-                throw new Exception("从硬盘回复失败");
+                throw new Exception("Failed to resume from disk");
             }
 
             _initialized = true;
             
         }
 
-        //参数设置
+        //Parameter configuration
         private void init()
         {
+            //backup's directory 
             DumpDirectory = @"D:\";
-            //磁盘文件地址
+
+            //path of disk file to be resumed
             DiskFilePath = @"D:\Test.dat";
         }
 
@@ -55,7 +59,7 @@ namespace AddressMatch
         {
             if (!File.Exists(DiskFilePath))
             {
-                throw new IOException(DiskFilePath + "下面数据文件不存在");
+                throw new IOException("there's no data file is found in " + DiskFilePath);
             }
             Stream stream = null;
             try
@@ -82,10 +86,7 @@ namespace AddressMatch
             
         }
 
-        private void FillHashTable()
-        {
 
-        }
         #endregion
 
         #region -----------------------property-------------------------
@@ -115,14 +116,19 @@ namespace AddressMatch
 
         #endregion
 
-        #region -----------------------持久化-------------------------
-        //Flush to Disk -------------TODO  Add Header[] to file? e.g. Version, CRC, TimeStamp.....
+        #region -----------------------Persistence-------------------------
+
+        //------Flush to Disk -------------TODO  Add Header[] to file? e.g. Version, CRC, TimeStamp.....
+        /// <summary>
+        /// Dump to Disk, location is default directory. 
+        /// </summary>
+        /// <returns></returns>
         public  bool Dump()
         {
 
             if (DumpDirectory == "" || DumpDirectory == null)
             {
-                throw new Exception("未初始化");
+                throw new Exception("The instance is not correctly initialized");
             }
 
             string dumpfile = getFileNameToDump();
@@ -141,7 +147,7 @@ namespace AddressMatch
                 throw new Exception("serialization failed! Message: " + ex.Message);
             }
 
-            Console.WriteLine(" serialize is success!");
+            Console.WriteLine(" Graph serialize  success!");
 
             return true;
         }
@@ -164,6 +170,12 @@ namespace AddressMatch
         #endregion
 
         #region -----------------------Retrieval-------------------------
+
+        /// <summary>
+        /// Retrieval the graph from root, Depth-First Traversal
+        /// </summary>
+        /// <param name="p"> find matched node in condition supported predicate delegate </param>
+        /// <returns>collections of result</returns>
         public  List<GraphNode> RetrievalGraph(Predicate<GraphNode> p)
         {
             List<GraphNode> result = new List<GraphNode>();
@@ -193,6 +205,12 @@ namespace AddressMatch
             }
         }
 
+        /// <summary>
+        /// Search matched node (multi-source) through specific delegate, from up to bottom.
+        /// </summary>
+        /// <param name="p">find matched node in condition supported predicate delegate</param>
+        /// <param name="sourceNodeList"></param>
+        /// <returns>collections of result</returns>
         public  List<GraphNode> ForwardSearchNode(Predicate<GraphNode> p, IList<GraphNode> sourceNodeList)
         {
             List<GraphNode> result = new List<GraphNode>();
@@ -209,6 +227,12 @@ namespace AddressMatch
             return result;
         }
 
+        /// <summary>
+        /// Search matched node with single source node through specific delegate, from up to bottom.
+        /// </summary>
+        /// <param name="p">find matched node in condition supported predicate delegate</param>
+        /// <param name="sourceNode"></param>
+        /// <returns>collections of result</returns>
         public List<GraphNode> ForwardSearchNode(Predicate<GraphNode> p, GraphNode sourceNode)
         {
             List<GraphNode> result = new List<GraphNode>();
@@ -223,12 +247,16 @@ namespace AddressMatch
         }
 
 
-
         #endregion
 
 
         #region -----------------------GraphNodeOperation------------------------
-
+        /// <summary>
+        /// Insert a node into graph
+        /// </summary>
+        /// <param name="NewNode">The node to be inserted</param>
+        /// <param name="FatherNode">The node's father node</param>
+        /// <returns></returns>
         public bool Insert(GraphNode NewNode,GraphNode FatherNode)
         {
             rwLock.EnterWriteLock();
@@ -264,6 +292,11 @@ namespace AddressMatch
         }
         
         // Need Retrieval the Whole Graph!        --------TODO: Improve?   NEED TESTED
+        /// <summary>
+        /// Delete a node from graph
+        /// </summary>
+        /// <param name="node">The node to be deleted</param>
+        /// <returns></returns>
         public bool Delete(GraphNode node)
         {
             rwLock.EnterWriteLock();
@@ -328,7 +361,12 @@ namespace AddressMatch
             return true;
         }
 
-        
+        /// <summary>
+        /// Rename a node in graph
+        /// </summary>
+        /// <param name="node">The node to be renamed</param>
+        /// <param name="name">new name</param>
+        /// <returns></returns>
         public bool ReName(GraphNode node, string name)
         {
             rwLock.EnterWriteLock();
@@ -365,6 +403,11 @@ namespace AddressMatch
 
 
         #region -----------------------Query In HashTable-------------------------
+        /// <summary>
+        /// Find node with specific name in HashTable
+        /// </summary>
+        /// <param name="name">name of node</param>
+        /// <returns>query state</returns>
         public State FindNodeInHashTable(string name)
         {
             rwLock.EnterReadLock();
@@ -401,7 +444,11 @@ namespace AddressMatch
 
         }
 
-
+        /// <summary>
+        /// Find node with specific name in HashTable
+        /// </summary>
+        /// <param name="name">name of node</param>
+        /// <returns>collection of result</returns>
         public List<GraphNode> FindGNodeListInHashTable(string name)
         {
             rwLock.EnterReadLock();
