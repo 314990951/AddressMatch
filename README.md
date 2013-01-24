@@ -14,3 +14,7 @@ can be classified into a same class).
 Demo
 ===========
     For more detail, see Demo/Demo.cs
+    
+Copying
+===========
+Copyright (C) Wuhan Universiy of Technology. wutnews.net, Powered By Token Team 
