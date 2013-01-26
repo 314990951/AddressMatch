@@ -132,7 +132,7 @@ namespace AddressMatch
 
             if (resList == null || resList.Count == 0)
             {
-                result.ResultState = MatchResultState.NOTFOUND;
+                result.ResultState = MatchResultState.NOTMATCHED;
                 return result;
             }
 
