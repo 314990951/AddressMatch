@@ -104,12 +104,7 @@ namespace AddressMatch
                 result.ResultState = MatchResultState.MULTIMATCHED;
                 return result;
             }
-            //if (firstState.NodeCount == 1)
-            //{
-            //    result.Result = firstState.NodeList.First();
-            //    result.ResultState = MatchResultState.SUCCESS;
-            //    return result;
-            //}
+
 
             List<GraphNode> resList;
             State TopState = MatchStack.Pop();
