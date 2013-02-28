@@ -20,7 +20,8 @@ namespace AddressMatch
 
         static void Test()
         {
-            CustomTest.TestRef();
+            //CustomTest.TestRef();
+            InitTest.InitFromFile();
         }
     }
 }

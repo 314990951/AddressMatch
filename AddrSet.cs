@@ -32,11 +32,15 @@ namespace AddressMatch
 
         #region -----------------------Init -------------------------
 
+        public AddrSet(int a)
+        {
+
+        }
         private AddrSet()
         {
             init();
 
-            if (!ResumeFromDisk())
+            if (!_ResumeFromDisk())
             {
                 throw new Exception("Failed to resume from disk");
             }
@@ -55,7 +59,7 @@ namespace AddressMatch
             DiskFilePath = @"D:\Test.dat";
         }
 
-        private bool ResumeFromDisk()
+        private bool _ResumeFromDisk()
         {
             if (!File.Exists(DiskFilePath))
             {
