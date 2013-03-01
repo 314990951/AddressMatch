@@ -40,11 +40,11 @@ namespace AddressMatch.Demo
 
             List<InsertElement> list = new List<InsertElement>();
 
-            list.Add(new InsertElement("武汉", LEVEL.City, InsertMode.AutoPlace & InsertMode.ExactlyLevel));
+            list.Add(new InsertElement("武汉", LEVEL.City, InsertMode.AutoPlace | InsertMode.ExactlyLevel));
 
-            list.Add(new InsertElement("理工大", LEVEL.Other, InsertMode.AutoPlace & InsertMode.ExactlyLevel));
+            list.Add(new InsertElement("理工大", LEVEL.Other, InsertMode.AutoPlace | InsertMode.ExactlyLevel));
 
-            list.Add(new InsertElement("屋檐下", LEVEL.Uncertainty, InsertMode.AutoPlace & InsertMode.ExactlyLevel));
+            list.Add(new InsertElement("屋檐下", LEVEL.Uncertainty, InsertMode.AutoPlace | InsertMode.ExactlyLevel));
 
             m.Train(list, true);
 

@@ -28,7 +28,7 @@ namespace AddressMatch
         private static object SingleInstanceLock = new object();
 
         //rwlock
-        private static ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
 
         #region -----------------------Init -------------------------
 
@@ -475,6 +475,24 @@ namespace AddressMatch
         }
         #endregion
 
+
+        #region -----------------------rwLock dashboard-------------------------
+        public int GetCurrentReadCount()
+        {
+            return rwLock.CurrentReadCount;
+        }
+
+        public int GetWaitingReadCount()
+        {
+            return rwLock.WaitingReadCount;
+        }
+
+        public int GetWaitingWriteCount()
+        {
+            return rwLock.WaitingWriteCount;
+        }
+
+        #endregion
 
     }
 

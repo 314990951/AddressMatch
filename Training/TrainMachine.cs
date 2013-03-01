@@ -282,9 +282,8 @@ namespace AddressMatch.Training
                             fathernode = node;
                         }
                     }
-                #endregion
-
                 }
+                #endregion
             }
 
             return true;

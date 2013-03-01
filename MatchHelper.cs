@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AddressMatch
 {
@@ -100,6 +101,18 @@ namespace AddressMatch
         #endif
 
 
+        }
+
+        public static void rwLockDashboard(AddrSet addrset)
+        {
+            Thread currentThread = Thread.CurrentThread;
+            Console.WriteLine("==DEBUG== CurrentReadThreadsCount =   " + addrset.GetCurrentReadCount() +
+                    " , currentThread = " + currentThread.ManagedThreadId);
+            Console.WriteLine("==DEBUG== WaitingReadThreadsCount =   " + addrset.GetWaitingReadCount() +
+                    " , currentThread = " + currentThread.ManagedThreadId);
+            Console.WriteLine("==DEBUG== WaitingWriteThreadsCount =   " + addrset.GetWaitingWriteCount() +
+                    " , currentThread = " + currentThread.ManagedThreadId);
+            Console.WriteLine("==DEBUG== //////////////");
         }
     }
 }
