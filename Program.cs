@@ -21,7 +21,7 @@ namespace AddressMatch
         static void Test()
         {
             //CustomTest.TestRef();
-            ReaderWriterLockSlimDemo.Test();
+            ConcurrentTest.Test();
         }
     }
 }

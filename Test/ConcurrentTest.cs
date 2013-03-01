@@ -44,16 +44,23 @@ namespace AddressMatch.Test
 
         public static void Test()
         {
-            for (int i = 0; i < 50; i++)
+
+            Thread[] thread_match = new Thread[10];
+            for (int i = 0; i < 10;i++ )
             {
-                Thread a = new Thread(new ThreadStart(Match));
-
-                
-                Thread b = new Thread(new ThreadStart(Train));
-                b.Start();
-
-                a.Start();
-                
+                thread_match[i] = new Thread(new ThreadStart(Match));
+                thread_match[i].Start();
+            }
+            Thread[] thread_train = new Thread[10];
+            for (int i = 0; i < 10; i++)
+            {
+                thread_train[i] = new Thread(new ThreadStart(Train));
+                thread_train[i].Start();
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                thread_match[i].Join();
+                thread_train[i].Join();
             }
             AddrSet addrset = AddrSet.GetInstance();
             Console.WriteLine("end");
@@ -61,6 +68,7 @@ namespace AddressMatch.Test
 
         public static void Test2()
         {
+            Train();
             Train();
         }
 

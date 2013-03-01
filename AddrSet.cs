@@ -10,7 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AddressMatch
 {
-
+    // is not thread-safe
     public class AddrSet
     {
 
@@ -113,6 +113,11 @@ namespace AddressMatch
 
         }
 
+        public ReaderWriterLockSlim GetRWlock()
+        {
+            return this.rwLock;
+        }
+
         public bool Initialized
         {
             get { return _initialized; }
@@ -184,11 +189,7 @@ namespace AddressMatch
         {
             List<GraphNode> result = new List<GraphNode>();
 
-            rwLock.EnterReadLock();
-
             MultiMatchInNext(p, AddrGraph.root, ref result);
-
-            rwLock.ExitReadLock();
 
             return result;
         }
@@ -219,15 +220,11 @@ namespace AddressMatch
         {
             List<GraphNode> result = new List<GraphNode>();
             
-            rwLock.EnterReadLock();
             foreach (var sourceNode in sourceNodeList)
             {
                 MultiMatchInNext(p, sourceNode, ref result);
             }
             
-            
-            rwLock.ExitReadLock();
-
             return result;
         }
 
@@ -241,11 +238,7 @@ namespace AddressMatch
         {
             List<GraphNode> result = new List<GraphNode>();
 
-            rwLock.EnterReadLock();
-
             MultiMatchInNext(p, sourceNode, ref result);
-
-            rwLock.ExitReadLock();
 
             return result;
         }
@@ -263,8 +256,6 @@ namespace AddressMatch
         /// <returns></returns>
         public bool Insert(GraphNode NewNode,GraphNode FatherNode)
         {
-            rwLock.EnterWriteLock();
-
             if (NewNode == null || FatherNode ==null || FatherNode.NextNodeList == null)
             {
                 return false;
@@ -290,7 +281,7 @@ namespace AddressMatch
             //Linked to Graph
             FatherNode.NextNodeList.Add(NewNode);
 
-            rwLock.ExitWriteLock();
+            AddrGraph.NodeCount++;
 
             return true;
         }
@@ -303,8 +294,6 @@ namespace AddressMatch
         /// <returns></returns>
         public bool Delete(GraphNode node)
         {
-            rwLock.EnterWriteLock();
-
             //Delete from NodeTable
             Hashtable table = AddrSet.AddrGraph.NodeTable;
             TableNode tnodelist = table[node.Name] as TableNode;
@@ -358,9 +347,8 @@ namespace AddressMatch
             foreach (GraphNode resultnode in gnodelist)
             {
                 resultnode.NextNodeList.Remove(node);
+                AddrGraph.NodeCount--;
             }
-
-            rwLock.ExitWriteLock();
 
             return true;
         }
@@ -373,8 +361,6 @@ namespace AddressMatch
         /// <returns></returns>
         public bool ReName(GraphNode node, string name)
         {
-            rwLock.EnterWriteLock();
-
             List<GraphNode> gnodelist = FindGNodeListInHashTable(node.Name);
             foreach (GraphNode gnode in gnodelist)
             {
@@ -383,8 +369,6 @@ namespace AddressMatch
                     gnode.Name = name;
                 }
             }
-
-            rwLock.ExitWriteLock();
 
             return true;
         }
@@ -414,8 +398,6 @@ namespace AddressMatch
         /// <returns>query state</returns>
         public State FindNodeInHashTable(string name)
         {
-            rwLock.EnterReadLock();
-
             State state = new State();
             if (AddrGraph.NodeTable[name] == null)
             {
@@ -442,8 +424,6 @@ namespace AddressMatch
             state.Name = name;
             state.NodeCount = i;
 
-            rwLock.ExitReadLock();
-
             return state;
 
         }
@@ -455,8 +435,6 @@ namespace AddressMatch
         /// <returns>collection of result</returns>
         public List<GraphNode> FindGNodeListInHashTable(string name)
         {
-            rwLock.EnterReadLock();
-
             List<GraphNode> resultList = new List<GraphNode>();
 
             TableNode node = AddrGraph.NodeTable[name] as TableNode;
@@ -467,8 +445,6 @@ namespace AddressMatch
                 resultList.Add(node.Next.GNode);
                 node = node.Next;
             }
-
-            rwLock.ExitReadLock();
 
             return resultList;
 

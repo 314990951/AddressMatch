@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AddressMatch.Training
 {
@@ -107,23 +108,35 @@ namespace AddressMatch.Training
         {
             List<State> StateList = new List<State>(list.Count);
 
+            ReaderWriterLockSlim rwlock = _addrset.GetRWlock();
+            rwlock.EnterWriteLock();
+
             for (int i = 0; i < list.Count; i++)
             {
                 State tmpState = PreliminaryCheck(list[i]);
                 if (tmpState == null)
                 {
+                    rwlock.ExitWriteLock();
                     return 0;
                 }
                 StateList.Add(tmpState);
             }
 
 
-            if (!_insert(list, StateList))
+            bool res = _insert(list, StateList);
+
+            rwlock.ExitWriteLock();
+
+            if (res)
+            {
+                return 1;
+            }
+            else
             {
                 return 0;
             }
 
-            return 1;
+            
            
         }
         //  TODO  Uncompleted
@@ -154,15 +167,17 @@ namespace AddressMatch.Training
         {
             int start = GetTopPostionIndex(ElementList, StateList);
 
+            GraphNode fathernode = null;
             //if linked to root? 
             if (start == 0 && StateList[0].NodeCount == 0)
             {
                 GraphNode node = new GraphNode(ElementList[0].Name, ElementList[0].Level);
+                fathernode = node;
                 _addrset.Insert(node, AddrSet.AddrGraph.root);
                 start++;
             }
             //TODO  need test more
-            GraphNode fathernode = null;
+            fathernode = fathernode != null ? fathernode : StateList[start-1].NodeList.Single();
 
             for (; start < ElementList.Count; start++)
             {
@@ -316,7 +331,7 @@ namespace AddressMatch.Training
                     }
                     else
                     {
-                        index = i;
+                        index = i + 1;
                         // continue loop
                         continue;
                     }
@@ -325,7 +340,7 @@ namespace AddressMatch.Training
                 {
                     if (StateList[i].NodeCount == 1)
                     {
-                        index = i;
+                        index = i + 1;
                         continue;
                     }
                     else if (StateList[i].NodeCount > 1)

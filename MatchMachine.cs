@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AddressMatch
 {
     public delegate bool MatchRule(State state, GraphNode node);
 
     public class MatchMachine
-    {
-        
+    {   
         private  MatchRule LocalMatchRule;
 
         private AddrSet _addrset;
@@ -69,7 +69,8 @@ namespace AddressMatch
             s.Reverse();
             //Store the first Match
             State firstState = new State();
-
+            ReaderWriterLockSlim rwlock = _addrset.GetRWlock();
+            rwlock.EnterReadLock();
             for (int i = 0; i < s.Count();i++)
             {
                 State correntState = _addrset.FindNodeInHashTable(s[i]);
@@ -80,7 +81,7 @@ namespace AddressMatch
                 if (correntState.NodeCount == 0)
                 {
                     result.ResultState = MatchResultState.NOTFOUND;
-                    return result;
+                    goto RESULT;
                 }
                 //MatchStack.
                 if (MatchStack.Count > 0)
@@ -89,7 +90,7 @@ namespace AddressMatch
                     if (correntState.NodeCount == 0)
                     {
                         result.ResultState = MatchResultState.NOTMATCHED;
-                        return result;
+                        goto RESULT;
                     }
                 }
                 MatchStack.Push(correntState);
@@ -97,12 +98,12 @@ namespace AddressMatch
             if (MatchStack.Count == 0)
             {
                 result.ResultState = MatchResultState.NOTFOUND;
-                return result;
+                goto RESULT;
             }
             if (MatchStack.Peek().NodeCount > 1)
             {
                 result.ResultState = MatchResultState.MULTIMATCHED;
-                return result;
+                goto RESULT;
             }
 
 
@@ -125,21 +126,25 @@ namespace AddressMatch
                 //}
             } while (MatchStack.Count > 0);
 
+            rwlock.ExitReadLock();
+
             if (resList == null || resList.Count == 0)
             {
                 result.ResultState = MatchResultState.NOTMATCHED;
-                return result;
+                goto RESULT;
             }
 
             if (resList.Count > 1)
             {
                 result.ResultState = MatchResultState.MULTIMATCHED;
-                return result;
+                goto RESULT;
             }
 
             result.Result = resList.First();
             result.ResultState = MatchResultState.SUCCESS;
 
+        RESULT:
+            rwlock.ExitReadLock();
             return result;
 
         }
